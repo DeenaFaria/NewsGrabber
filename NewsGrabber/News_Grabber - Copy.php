@@ -1,23 +1,7 @@
 <?php
 include_once('simple_html_dom.php');
 
-
 function scraping_generic($url, $search) {
-$hostname = "127.0.0.1";
-$username = "root";
-$password = "";
-$dbname = "mydb";
-// Create connection
-$conn =mysqli_connect($hostname, $username, $password, $dbname);
-mysqli_select_db($conn,$dbname);
-mysqli_query($conn,'SET CHARACTER SET utf8' );
-mysqli_query($conn,"SET SESSION collation_connection='utf8_general_ci'");
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-} 
-echo "Connected successfully"."<br>";
 	// Didn't find it yet.
 	$return = false;
 
@@ -42,43 +26,52 @@ echo "Connected successfully"."<br>";
 		else{
 			$grab[]= " <a href=$url/$links >$links1</a>";
 		}
-	
 
 	}
 	$result=preg_grep("/$search/",$grab); 
 	$result1=preg_grep("/$search/",$arr); 
-	//print_r($result);
+	
 
 	foreach($result as $value){
-  // echo $sql="INSERT INTO grabber(link,keyword) VALUES ('$value','$search')";
-  
- // $value = mysqli_real_escape_string($conn, $_REQUEST['value']);
-
-  
-	//$conn->query($sql);
-	//$conn->mysqli_query($conn,$sql);	
 		echo "<br>".$value."<br>";
-		
 	}
 	
 
+$hostname = "127.0.0.1";
+$username = "root";
+$password = "";
 
-foreach ($result1 as $val)
+// Create connection
+$conn =new mysqli($hostname, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+echo "Connected successfully";
+
+foreach ($result as $links1=>$value)
 {
-	$search = mysqli_real_escape_string($conn, $_REQUEST['search']);
-$sql="INSERT INTO grabber(link,keyword) VALUES ('$val','$search')";
-mysqli_query($conn, $sql);
+// connect to mysql database
+$sql="INSERT INTO grabber('NewsTitle') VALUES ('$links1')";
+
+
+mysqli_query($conn,$sql);
 
 }
-
-
-
-//}
+foreach ($result as $result){
+$sql="INSERT INTO grabber('Link') VALUES ('$result')";
+mysqli_query($conn,$sql);
+}
+foreach ($result as $search){
+$sql="INSERT INTO grabber('Keyword') VALUES ('$search')";
+mysqli_query($conn,$sql);
+}
 	
-//$serializedData = serialize($result1);
+$serializedData = serialize($result1);
 
 // save serialized data in a text file
-//file_put_contents('Result.txt', $serializedData. PHP_EOL, FILE_APPEND | LOCK_EX);
+file_put_contents('Result.txt', $serializedData. PHP_EOL, FILE_APPEND | LOCK_EX);
 
 
 	
